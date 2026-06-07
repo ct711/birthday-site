@@ -1987,9 +1987,24 @@
 
     @media (max-width: 760px) {
       main > section { padding: clamp(42px, 10vw, 72px) clamp(16px, 5vw, 24px); }
-      .hero-content { grid-template-columns: 1fr; }
-      .hero-scene { order: -1; height: 48vh; min-height: 360px; }
-      .hero h2 { font-size: clamp(42px, 14vw, 76px); }
+      .hero-content {
+        grid-template-columns: 1fr;
+        gap: clamp(20px, 5vw, 34px);
+        align-content: center;
+      }
+      .hero-scene { order: -1; height: 40vh; min-height: 290px; max-height: 390px; }
+      .hero h2 {
+        max-width: 360px;
+        margin-inline: auto;
+        font-size: clamp(34px, 10vw, 48px);
+        line-height: .96;
+        text-wrap: balance;
+      }
+      .hero p {
+        max-width: 330px;
+        margin-inline: auto;
+        font-size: clamp(15px, 4vw, 17px);
+      }
       .hero-kirby { width: min(190px, 42vw); }
       .hero-blue-cat { width: min(188px, 40vw); left: -8%; }
       .hero-pink-cat { width: min(168px, 36vw); right: -8%; }
@@ -2004,14 +2019,18 @@
       }
       .letter-copy {
         justify-items: center;
-        gap: 12px;
+        gap: 10px;
+        width: 100%;
       }
       .letter-copy h2 {
-        font-size: clamp(31px, 9.4vw, 46px);
-        line-height: .98;
+        max-width: 330px;
+        margin-inline: auto;
+        font-size: clamp(30px, 8.2vw, 40px);
+        line-height: 1.02;
+        text-wrap: balance;
       }
       .letter-copy p {
-        max-width: 330px;
+        max-width: 315px;
         font-size: clamp(14px, 4vw, 16px);
         line-height: 1.42;
       }
@@ -2027,10 +2046,30 @@
       .letter-scene.is-open .letter-paper { transform: translateY(-74px) scale(.98); }
       .letter-paper strong { font-size: clamp(21px, 6.4vw, 28px); }
       .letter-paper span { font-size: 12.5px; line-height: 1.32; }
-      .kirby-arrival { grid-template-columns: 1fr; }
-      .kirby-arrival-scene { order: -1; height: 46vh; min-height: 340px; }
-      .kirby-arrival-copy { order: 2; justify-items: center; text-align: center; }
-      .arrival-kirby { width: min(210px, 48vw); }
+      .kirby-arrival {
+        grid-template-columns: 1fr;
+        gap: clamp(18px, 5vw, 30px);
+      }
+      .kirby-arrival-scene { order: -1; height: 38vh; min-height: 280px; max-height: 360px; }
+      .kirby-arrival-copy {
+        order: 2;
+        justify-items: center;
+        text-align: center;
+        gap: 12px;
+      }
+      .kirby-arrival-copy h2 {
+        max-width: 345px;
+        margin-inline: auto;
+        font-size: clamp(32px, 9.4vw, 44px);
+        line-height: .98;
+        text-wrap: balance;
+      }
+      .kirby-arrival-copy p {
+        max-width: 320px;
+        margin-inline: auto;
+        font-size: clamp(14px, 3.9vw, 16px);
+      }
+      .arrival-kirby { width: min(190px, 48vw); }
       .portal-showcase { grid-template-columns: 1fr; }
       .portal-scene { height: 52vh; min-height: 390px; }
       .portal-device { width: min(340px, 76vw); }
@@ -2101,13 +2140,20 @@
       .loading-inner { width: min(100%, 340px); padding: 0 16px; }
       .hero h2,
       .kirby-arrival h2,
-      .gallery h2 { font-size: clamp(34px, 12vw, 54px); }
+      .gallery h2 { font-size: clamp(32px, 9.8vw, 44px); }
       .hero-copy,
       .kirby-arrival-copy,
       .gallery-head { text-align: center; justify-content: center; }
-      .letter-scene { width: min(360px, 90vw); gap: 14px; }
-      .letter-copy h2 { font-size: clamp(30px, 9.8vw, 42px); }
-      .letter-copy p { max-width: 300px; }
+      .hero-copy,
+      .kirby-arrival-copy,
+      .letter-copy { padding-inline: 4px; }
+      .letter-scene { width: min(360px, 90vw); gap: 16px; }
+      .letter-copy h2 {
+        max-width: 320px;
+        font-size: clamp(29px, 8.8vw, 38px);
+        line-height: 1.03;
+      }
+      .letter-copy p { max-width: 292px; }
       .envelope-stage { min-height: 276px; padding-top: 0; }
       .envelope { width: min(300px, 82vw); height: 198px; }
       .letter-paper { inset: 11px 19px auto; height: 152px; padding: 14px; }
@@ -3615,10 +3661,10 @@
       }
 
       .flame-zone {
-        left: 78.6%;
-        top: 30.8%;
-        width: 62px;
-        height: 78px;
+        left: 75.8%;
+        top: 31.6%;
+        width: 58px;
+        height: 74px;
       }
 
       .flame {

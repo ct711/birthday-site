@@ -1056,6 +1056,27 @@
       user-select: none;
     }
 
+
+
+    .kirby-idle-heart {
+      position: fixed;
+      z-index: 40;
+      left: 0;
+      top: 0;
+      width: 18px;
+      height: 18px;
+      display: grid;
+      place-items: center;
+      color: #ff7ea8;
+      font-size: 18px;
+      line-height: 1;
+      pointer-events: none;
+      text-shadow: 0 8px 22px rgba(255, 126, 168, .32);
+      filter: drop-shadow(0 0 10px rgba(255,255,255,.55));
+      transform: translate3d(var(--x), var(--y), 0) scale(.6) rotate(-10deg);
+      animation: kirbyIdleHeart 1300ms cubic-bezier(.16,.8,.24,1) forwards;
+    }
+
     .arrival-star {
       position: absolute;
       left: var(--x);
@@ -1829,6 +1850,22 @@
       50% { translate: 0 -14px; }
     }
 
+
+
+    @keyframes kirbyIdleHeart {
+      0% {
+        opacity: 0;
+        transform: translate3d(var(--x), var(--y), 0) scale(.55) rotate(-10deg);
+      }
+      18% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translate3d(calc(var(--x) + var(--drift)), calc(var(--y) - 74px), 0) scale(1.14) rotate(12deg);
+      }
+    }
+
     @keyframes sideFloat {
       0%, 100% { translate: 0 0; }
       50% { translate: 0 -10px; }
@@ -2087,6 +2124,10 @@
       .kirby { bottom: 210px; }
       .cake { right: 70px; bottom: 350px; }
     }
+  
+    .final-embed { overflow: hidden !important; }
+    .final-embed iframe { height: max(100vh, min(132vh, 1180px)) !important; overflow: hidden !important; scrollbar-width: none !important; }
+    .final-embed iframe::-webkit-scrollbar { display: none !important; }
   </style>
 <style id="builderThemeStyle">
         body { font-family: "Comic Sans MS", "Marker Felt", "Segoe Print", cursive !important; }
@@ -2282,7 +2323,7 @@
     </section>
 
     <section class="final-embed" id="finalInlineSection" aria-label="Final birthday surprise">
-      <iframe id="finalInlineFrame" title="Final birthday surprise" srcdoc="&lt;!doctype html&gt;
+      <iframe id="finalInlineFrame" title="Final birthday surprise" scrolling="no" srcdoc="&lt;!doctype html&gt;
 &lt;html lang=&quot;zh-Hans&quot;&gt;&lt;head&gt;
   &lt;meta charset=&quot;utf-8&quot;&gt;
   &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
@@ -2461,6 +2502,27 @@
       filter: drop-shadow(0 30px 34px rgba(0, 0, 0, .38)) drop-shadow(0 0 28px rgba(255, 126, 168, .2));
       opacity: 0;
       transform: translateY(34px) scale(.88);
+    }
+
+
+
+    .kirby-idle-heart {
+      position: fixed;
+      z-index: 12;
+      left: 0;
+      top: 0;
+      width: 18px;
+      height: 18px;
+      display: grid;
+      place-items: center;
+      color: #ff7ea8;
+      font-size: 18px;
+      line-height: 1;
+      pointer-events: none;
+      text-shadow: 0 8px 22px rgba(255, 126, 168, .32);
+      filter: drop-shadow(0 0 10px rgba(255,255,255,.55));
+      transform: translate3d(var(--x), var(--y), 0) scale(.6) rotate(-10deg);
+      animation: kirbyIdleHeart 1300ms cubic-bezier(.16,.8,.24,1) forwards;
     }
 
     .easter-kirby {
@@ -2843,6 +2905,22 @@
       50% { translate: 0 -10px; }
     }
 
+
+
+    @keyframes kirbyIdleHeart {
+      0% {
+        opacity: 0;
+        transform: translate3d(var(--x), var(--y), 0) scale(.55) rotate(-10deg);
+      }
+      18% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translate3d(calc(var(--x) + var(--drift)), calc(var(--y) - 74px), 0) scale(1.14) rotate(12deg);
+      }
+    }
+
     @keyframes lineIn {
       from { opacity: 0; transform: translateY(16px); filter: blur(6px); }
       to { opacity: 1; transform: translateY(0); filter: blur(0); }
@@ -2955,7 +3033,7 @@
       &lt;div class=&quot;easter-status&quot; id=&quot;easterStatus&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;final-copy&quot; aria-hidden=&quot;true&quot;&gt;
         &lt;h1&gt;A cake for &lt;button class=&quot;you-trigger&quot; id=&quot;youTrigger&quot; aria-label=&quot;Tap you seven times&quot;&gt;YOU&lt;/button&gt;&lt;/h1&gt;
-        &lt;p&gt;Happy Birthday, Aditi! 🎂&lt;br&gt;&lt;br&gt;Wishing you a day filled with joy, laughter, and surprises as sweet as you are! &amp;lt;3&lt;br&gt;&lt;br&gt;You deserve the absolute best — here's to another amazing year ahead!&lt;br&gt;&lt;br&gt;Always,&lt;br&gt;Ct 💕&lt;br&gt;&lt;/p&gt;
+        &lt;p&gt;Happy Birthday, Aditi! 🎂&lt;br&gt;&lt;br&gt;Wishing you a day filled with joy, laughter, and surprises as sweet as you are! &amp;lt;3&lt;br&gt;&lt;br&gt;You deserve the absolute best — here's to another amazing year ahead!&lt;br&gt;&lt;br&gt;With love&lt;br&gt;Ct 💕&lt;br&gt;&lt;/p&gt;
       &lt;/div&gt;
       &lt;div class=&quot;actions&quot;&gt;
         &lt;button class=&quot;btn primary&quot; id=&quot;backBtn&quot;&gt;Back to Gallery&lt;/button&gt;
@@ -3860,6 +3938,43 @@
     const finalKirbyImg = document.querySelector(&quot;.final-kirby&quot;);
     if (finalKirbyImg?.decode) finalKirbyImg.decode().catch(() =&gt; {});
 
+    let lastHumanAction = Date.now();
+
+    function noteHumanAction() {
+      lastHumanAction = Date.now();
+    }
+
+    [&quot;pointerdown&quot;, &quot;keydown&quot;, &quot;wheel&quot;, &quot;touchstart&quot;].forEach((eventName) =&gt; {
+      window.addEventListener(eventName, noteHumanAction, { passive: true });
+    });
+
+    function playFinalKirbyIdle() {
+      if (!finalContent.classList.contains(&quot;is-visible&quot;)) return;
+      if (document.body.classList.contains(&quot;is-easter-open&quot;)) return;
+      if (window.matchMedia(&quot;(prefers-reduced-motion: reduce)&quot;).matches) return;
+      if (Date.now() - lastHumanAction &lt; 5200) return;
+      const rect = finalKirbyImg.getBoundingClientRect();
+      if (rect.width &lt; 30 || rect.height &lt; 30 || rect.bottom &lt; 0 || rect.top &gt; window.innerHeight) return;
+      const base = getComputedStyle(finalKirbyImg).transform;
+      const baseTransform = base &amp;&amp; base !== &quot;none&quot; ? base : &quot;&quot;;
+      finalKirbyImg.animate([
+        { transform: baseTransform, filter: getComputedStyle(finalKirbyImg).filter },
+        { transform: baseTransform + &quot; translateY(-10px) scale(1.035)&quot;, filter: &quot;drop-shadow(0 30px 34px rgba(0,0,0,.38)) drop-shadow(0 0 26px rgba(255,126,168,.32))&quot;, offset: .42 },
+        { transform: baseTransform, filter: getComputedStyle(finalKirbyImg).filter }
+      ], { duration: 820, easing: &quot;cubic-bezier(.2,.9,.2,1)&quot; });
+      const heart = document.createElement(&quot;span&quot;);
+      heart.className = &quot;kirby-idle-heart&quot;;
+      heart.textContent = &quot;♥&quot;;
+      heart.style.setProperty(&quot;--x&quot;, (rect.left + rect.width * .7) + &quot;px&quot;);
+      heart.style.setProperty(&quot;--y&quot;, (rect.top + rect.height * .22) + &quot;px&quot;);
+      heart.style.setProperty(&quot;--drift&quot;, ((Math.random() &gt; .5 ? 1 : -1) * (18 + Math.random() * 26)) + &quot;px&quot;);
+      document.body.appendChild(heart);
+      setTimeout(() =&gt; heart.remove(), 1400);
+    }
+
+    setInterval(playFinalKirbyIdle, 6200);
+
+
     const revealFinal = () =&gt; {
       if (introTimer) return;
       introTimer = 1;
@@ -4313,6 +4428,8 @@
 
     const magicParticles = [];
     const confetti = [];
+    const idleKirbySelectors = [".arrival-kirby", "#kirby", ".stew-chef"];
+    let lastHumanAction = Date.now();
     let loadProgress = 0;
     let threeReady = false;
     let threeClock = null;
@@ -4495,6 +4612,60 @@
       setTimeout(() => layer.remove(), 2600);
     }
 
+
+
+    function noteHumanAction() {
+      lastHumanAction = Date.now();
+    }
+
+    ["pointerdown", "keydown", "wheel", "touchstart"].forEach((eventName) => {
+      window.addEventListener(eventName, noteHumanAction, { passive: true });
+    });
+
+    function visibleIdleKirbies() {
+      return idleKirbySelectors
+        .flatMap((selector) => [...document.querySelectorAll(selector)])
+        .filter((el) => {
+          const rect = el.getBoundingClientRect();
+          const style = getComputedStyle(el);
+          return rect.width > 30
+            && rect.height > 30
+            && rect.bottom > 0
+            && rect.top < window.innerHeight
+            && style.visibility !== "hidden"
+            && style.display !== "none"
+            && Number(style.opacity || 1) > .18;
+        });
+    }
+
+    function playKirbyIdle() {
+      if (!loading.classList.contains("is-hidden")) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      if (Date.now() - lastHumanAction < 5200) return;
+      const kirbies = visibleIdleKirbies();
+      if (!kirbies.length) return;
+      const target = kirbies[Math.floor(Math.random() * kirbies.length)];
+      const rect = target.getBoundingClientRect();
+      const base = getComputedStyle(target).transform;
+      const baseTransform = base && base !== "none" ? base : "";
+      target.animate([
+        { transform: baseTransform, filter: getComputedStyle(target).filter },
+        { transform: baseTransform + " translateY(-10px) scale(1.035)", filter: "drop-shadow(0 22px 28px rgba(136,60,88,.2)) drop-shadow(0 0 18px rgba(255,126,168,.28))", offset: .42 },
+        { transform: baseTransform, filter: getComputedStyle(target).filter }
+      ], { duration: 820, easing: "cubic-bezier(.2,.9,.2,1)" });
+
+      const heart = document.createElement("span");
+      heart.className = "kirby-idle-heart";
+      heart.textContent = "♥";
+      heart.style.setProperty("--x", (rect.left + rect.width * .72) + "px");
+      heart.style.setProperty("--y", (rect.top + rect.height * .24) + "px");
+      heart.style.setProperty("--drift", ((Math.random() > .5 ? 1 : -1) * (18 + Math.random() * 26)) + "px");
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 1400);
+    }
+
+    setInterval(playKirbyIdle, 6200);
+
     function makeWhiteTransparent(imgEl) {
       if (!imgEl.complete) {
         imgEl.addEventListener("load", () => makeWhiteTransparent(imgEl), { once: true });
@@ -4579,9 +4750,6 @@
       playTone("letter");
       portal.classList.add("is-open");
       openLetterBtn.textContent = "Letter Opened";
-      setTimeout(() => {
-        document.getElementById("gallery").scrollIntoView({ behavior: "smooth" });
-      }, 1450);
     });
     function injectFinalInline() {
       if (!finalInlineFrame.src) {

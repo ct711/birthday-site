@@ -355,6 +355,11 @@
 
     .start-btn:hover { filter: brightness(1.05); }
 
+    body.is-final-candle-open {
+      overflow: hidden;
+      height: 100svh;
+    }
+
     main {
       min-height: 100vh;
       background: linear-gradient(180deg, #fff8ed 0%, #ffeaf3 36%, #edf9ff 68%, #fff8ed 100%);
@@ -3661,8 +3666,8 @@
       }
 
       .flame-zone {
-        left: 88.0%;
-        top: 30.9%;
+        left: 86.6%;
+        top: 31.5%;
         width: 54px;
         height: 70px;
       }
@@ -4357,11 +4362,19 @@
     }
 
     function openCandleSurprise() {
+      window.parent?.postMessage({ type: &quot;birthday-candle-open&quot; }, &quot;*&quot;);
+      window.scrollTo(0, 0);
       if (!candleFrame.src) {
         candleFrame.src = candleFrame.dataset.src || &quot;candle.html&quot;;
       }
       document.body.classList.add(&quot;is-candle-open&quot;);
       requestAnimationFrame(() =&gt; window.scrollTo(0, 0));
+      setTimeout(() =&gt; window.scrollTo(0, 0), 120);
+      candleFrame.addEventListener(&quot;load&quot;, () =&gt; {
+        try {
+          candleFrame.contentWindow?.scrollTo(0, 0);
+        } catch {}
+      }, { once: true });
     }
 
     function loadEasterKirby() {
@@ -4847,11 +4860,20 @@
     window.addEventListener("message", (event) => {
       if (!event.data || typeof event.data !== "object") return;
       if (event.data.type === "birthday-back-gallery") {
+        document.body.classList.remove("is-final-candle-open");
         document.getElementById("gallery").scrollIntoView({ behavior: "smooth" });
       }
       if (event.data.type === "birthday-restart") {
+        document.body.classList.remove("is-final-candle-open");
         finalInlineSection.classList.remove("is-active");
         document.getElementById("top").scrollIntoView({ behavior: "smooth" });
+      }
+      if (event.data.type === "birthday-candle-open") {
+        finalInlineSection.scrollIntoView({ behavior: "auto", block: "start" });
+        document.body.classList.add("is-final-candle-open");
+        requestAnimationFrame(() => {
+          finalInlineSection.scrollIntoView({ behavior: "auto", block: "start" });
+        });
       }
     });
 

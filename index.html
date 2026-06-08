@@ -21,7 +21,7 @@
       overflow-x: hidden;
       color: var(--ink);
       background: var(--cream);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: "Marker Felt", "Segoe Print", "Comic Sans MS", "Bradley Hand", cursive;
     }
 
     body.locked { overflow: hidden; }
@@ -2173,7 +2173,7 @@
     .final-embed iframe::-webkit-scrollbar { display: none !important; }
   </style>
 <style id="builderThemeStyle">
-        body { font-family: "Comic Sans MS", "Marker Felt", "Segoe Print", cursive !important; }
+        body { font-family: "Marker Felt", "Segoe Print", "Comic Sans MS", "Bradley Hand", cursive !important; }
         h1, h2, h3, .wish-card strong, .letter-paper strong, .final-copy h1 {
           color: #2c2432 !important;
         }
@@ -2386,7 +2386,7 @@
       margin: 0;
       min-height: 100vh;
       color: #fff8f2;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;
+      font-family: &quot;Marker Felt&quot;, &quot;Segoe Print&quot;, &quot;Comic Sans MS&quot;, &quot;Bradley Hand&quot;, cursive;
       background:
         radial-gradient(circle at 50% 44%, rgba(255, 126, 168, .2), transparent 30%),
         radial-gradient(circle at 22% 22%, rgba(143, 211, 255, .1), transparent 28%),
@@ -3038,7 +3038,7 @@
     }
   &lt;/style&gt;
 &lt;style id=&quot;builderThemeStyle&quot;&gt;
-        body { font-family: &quot;Comic Sans MS&quot;, &quot;Marker Felt&quot;, &quot;Segoe Print&quot;, cursive !important; }
+        body { font-family: &quot;Marker Felt&quot;, &quot;Segoe Print&quot;, &quot;Comic Sans MS&quot;, &quot;Bradley Hand&quot;, cursive !important; }
         h1, h2, h3, .wish-card strong, .letter-paper strong, .final-copy h1 {
           color: #2c2432 !important;
         }
@@ -3806,6 +3806,8 @@
     let data;
     let blowScore = 0;
     let isOut = false;
+    let micReadyAt = 0;
+    let loudFrames = 0;
     let animationFrame;
     let candleAudioCtx = null;
 
@@ -3892,6 +3894,7 @@
     function reset() {
       isOut = false;
       blowScore = 0;
+      loudFrames = 0;
       candle.classList.remove(&amp;quot;out&amp;quot;, &amp;quot;blowing&amp;quot;);
       stage.classList.remove(&amp;quot;celebrate&amp;quot;);
       statusText.textContent = audioContext ? &amp;quot;Microphone on&amp;quot; : &amp;quot;Ready&amp;quot;;
@@ -3903,19 +3906,23 @@
       analyser.getByteFrequencyData(data);
       const lowBand = data.slice(2, 24);
       const average = lowBand.reduce((sum, value) =&amp;gt; sum + value, 0) / lowBand.length / 255;
-      const volume = Math.max(0, Math.min(1, (average - 0.05) * 3.2));
+      const volume = Math.max(0, Math.min(1, (average - 0.12) * 2.15));
       setMeter(volume);
 
-      if (volume &amp;gt; 0.28) {
-        blowScore += volume;
+      const micWarmedUp = performance.now() &amp;gt; micReadyAt;
+      if (micWarmedUp &amp;&amp; volume &amp;gt; 0.45) {
+        loudFrames += 1;
+        blowScore += Math.max(0, volume - 0.25) * 0.55;
         candle.classList.add(&amp;quot;blowing&amp;quot;);
         statusText.textContent = &amp;quot;Blowing&amp;quot;;
       } else {
-        blowScore = Math.max(0, blowScore - 0.035);
+        loudFrames = Math.max(0, loudFrames - 1);
+        blowScore = Math.max(0, blowScore - 0.06);
         candle.classList.remove(&amp;quot;blowing&amp;quot;);
+        if (!micWarmedUp) statusText.textContent = &amp;quot;Listening&amp;quot;;
       }
 
-      if (blowScore &amp;gt; 1.45) {
+      if (loudFrames &amp;gt;= 12 &amp;&amp; blowScore &amp;gt; 1.8) {
         extinguish();
         return;
       }
@@ -3936,6 +3943,9 @@
         micButton.textContent = &amp;quot;Mic on&amp;quot;;
         micButton.disabled = true;
         statusText.textContent = &amp;quot;Microphone on&amp;quot;;
+        micReadyAt = performance.now() + 1400;
+        loudFrames = 0;
+        blowScore = 0;
         cancelAnimationFrame(animationFrame);
         readVolume();
       } catch (error) {

@@ -2658,7 +2658,8 @@ main {
 
     .you-trigger {
       display: inline;
-      padding: 0;
+      padding: .02em .08em .04em;
+      margin: -.02em -.04em;
       border: 0;
       color: inherit;
       background: transparent;
@@ -2667,6 +2668,10 @@ main {
       text-shadow: inherit;
       cursor: pointer;
       position: relative;
+      z-index: 22;
+      pointer-events: auto;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
       filter: drop-shadow(0 0 18px rgba(255,126,168,.22));
       animation: youGlow 2.6s ease-in-out infinite;
     }
@@ -4441,7 +4446,16 @@ main {
       if (easterKirbyImg.decode) easterKirbyImg.decode().catch(() =&gt; {});
     }
 
-    youTrigger.addEventListener(&quot;click&quot;, () =&gt; {
+    let lastYouTapAt = 0;
+
+    function handleYouTap(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      const now = performance.now();
+      if (now - lastYouTapAt &lt; 180) return;
+      lastYouTapAt = now;
       if (easterUnlocked) {
         return;
       }
@@ -4470,7 +4484,11 @@ main {
       setTimeout(() =&gt; {
         openCandleSurprise();
       }, 3000);
-    });
+    }
+
+    youTrigger.addEventListener(&quot;pointerup&quot;, handleYouTap);
+    youTrigger.addEventListener(&quot;touchend&quot;, handleYouTap, { passive: false });
+    youTrigger.addEventListener(&quot;click&quot;, handleYouTap);
 
     easterKirby.addEventListener(&quot;click&quot;, () =&gt; {
       if (easterUnlocked) {

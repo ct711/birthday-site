@@ -4410,7 +4410,9 @@ main {
     function openCandleSurprise() {
       window.parent?.postMessage({ type: &quot;birthday-candle-open&quot; }, &quot;*&quot;);
       window.scrollTo(0, 0);
-      if (!candleFrame.src) {
+      if (candleFrame.getAttribute(&quot;srcdoc&quot;)) {
+        candleFrame.removeAttribute(&quot;src&quot;);
+      } else if (!candleFrame.src) {
         candleFrame.src = candleFrame.dataset.src || &quot;candle.html&quot;;
       }
       document.body.classList.add(&quot;is-candle-open&quot;);

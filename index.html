@@ -2113,7 +2113,7 @@ main {
       .stew-chef { top: 49%; width: min(98vw, 400px); }
       .stew-pot { bottom: 9%; width: min(70vw, 286px); }
       .final-embed { padding: 0; }
-      .final-embed iframe { min-height: 100svh; }
+      .final-embed iframe { min-height: 100dvh; }
       .loading-panel,
       .gift-stage,
       .hero-copy,
@@ -2813,7 +2813,7 @@ main {
 
     .candle-surprise iframe {
       width: 100%;
-      height: 100svh;
+      height: 100dvh;
       border: 0;
       display: block;
       background: #050407;
@@ -3513,8 +3513,8 @@ main {
     }
 
     .stage-shell {
-      width: min(92vw, 1180px, calc((100svh - 32px) * 2));
-      min-height: 100svh;
+      width: min(90vw, 1120px, calc((100dvh - 32px) * 1.55));
+      min-height: 100dvh;
       display: grid;
       place-items: center;
       padding: 16px;
@@ -3523,7 +3523,7 @@ main {
 
     .stage {
       width: 100%;
-      max-height: calc(100svh - 32px);
+      max-height: calc(100dvh - 32px);
       border-radius: 18px;
       background: #fff7f4;
       box-shadow: 0 34px 90px rgba(20, 11, 20, .34), 0 0 0 1px rgba(255,255,255,.45);
@@ -3677,8 +3677,8 @@ main {
 
     @media (max-width: 720px) {
       .stage-shell {
-        width: min(94vw, 460px, calc((100svh - 24px) * .8));
-        padding: 12px 0;
+        width: min(88vw, 420px, calc((100dvh - 40px) * .68));
+        padding: max(10px, env(safe-area-inset-top)) 0 max(10px, env(safe-area-inset-bottom));
       }
 
       .stage {
@@ -3828,6 +3828,9 @@ main {
     let isOut = false;
     let micReadyAt = 0;
     let loudFrames = 0;
+    let ambientFloor = 0;
+    let calibrationSamples = [];
+    let calibratingUntil = 0;
     let animationFrame;
     let candleAudioCtx = null;
 
@@ -3926,23 +3929,33 @@ main {
       analyser.getByteFrequencyData(data);
       const lowBand = data.slice(2, 24);
       const average = lowBand.reduce((sum, value) =&amp;gt; sum + value, 0) / lowBand.length / 255;
-      const volume = Math.max(0, Math.min(1, (average - 0.12) * 2.15));
+      const rawVolume = average;
+      if (performance.now() < calibratingUntil) {
+        calibrationSamples.push(rawVolume);
+        const sampleTotal = calibrationSamples.reduce((total, value) => total + value, 0);
+        ambientFloor = Math.max(0.08, Math.min(0.5, sampleTotal / calibrationSamples.length + 0.1));
+        setMeter(0);
+        statusText.textContent = "Calibrating";
+        animationFrame = requestAnimationFrame(readVolume);
+        return;
+      }
+      const volume = Math.max(0, Math.min(1, Math.max(0, rawVolume - ambientFloor) * 3));
       setMeter(volume);
 
       const micWarmedUp = performance.now() &amp;gt; micReadyAt;
-      if (micWarmedUp &amp;&amp; volume &amp;gt; 0.45) {
+      if (micWarmedUp &amp;&amp; volume &amp;gt; 0.62 &amp;&amp; rawVolume &amp;gt; ambientFloor + 0.18) {
         loudFrames += 1;
-        blowScore += Math.max(0, volume - 0.25) * 0.55;
+        blowScore += Math.max(0, volume - 0.45) * 0.35;
         candle.classList.add(&amp;quot;blowing&amp;quot;);
         statusText.textContent = &amp;quot;Blowing&amp;quot;;
       } else {
         loudFrames = Math.max(0, loudFrames - 1);
-        blowScore = Math.max(0, blowScore - 0.06);
+        blowScore = Math.max(0, blowScore - 0.08);
         candle.classList.remove(&amp;quot;blowing&amp;quot;);
         if (!micWarmedUp) statusText.textContent = &amp;quot;Listening&amp;quot;;
       }
 
-      if (loudFrames &amp;gt;= 12 &amp;&amp; blowScore &amp;gt; 1.8) {
+      if (loudFrames &amp;gt;= 20 &amp;&amp; blowScore &amp;gt; 2.4) {
         extinguish();
         return;
       }
@@ -3962,8 +3975,11 @@ main {
         source.connect(analyser);
         micButton.textContent = &amp;quot;Mic on&amp;quot;;
         micButton.disabled = true;
-        statusText.textContent = &amp;quot;Microphone on&amp;quot;;
-        micReadyAt = performance.now() + 1400;
+        statusText.textContent = &amp;quot;Calibrating&amp;quot;;
+        calibrationSamples = [];
+        ambientFloor = 0;
+        calibratingUntil = performance.now() + 1800;
+        micReadyAt = performance.now() + 2600;
         loudFrames = 0;
         blowScore = 0;
         cancelAnimationFrame(animationFrame);

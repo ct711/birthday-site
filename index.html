@@ -288,8 +288,8 @@
 
     .loader-track {
       position: relative;
-      margin-top: 8px;
-      width: min(560px, 84vw);
+      margin: 8px auto 0;
+      width: min(440px, calc(100vw - 96px));
       height: 16px;
       border-radius: 999px;
       background: rgba(255, 255, 255, .62);
@@ -325,10 +325,10 @@
       position: absolute;
       left: 0;
       top: 50%;
-      width: 76px;
-      height: 56px;
+      width: 64px;
+      height: 50px;
       object-fit: contain;
-      transform: translate(-36%, -62%);
+      transform: translate(-50%, -62%);
       filter: drop-shadow(0 10px 14px rgba(89, 63, 78, .22));
       transition: left 120ms linear;
     }
@@ -2148,6 +2148,13 @@ main {
         width: min(330px, calc(100vw - 44px));
         font-size: clamp(30px, 8.2vw, 36px);
         line-height: 1.12;
+      }
+      .loader-track {
+        width: min(300px, calc(100vw - 92px));
+      }
+      .loader-ship {
+        width: 54px;
+        height: 42px;
       }
       .hero h2,
       .kirby-arrival h2,
@@ -4794,7 +4801,7 @@ main {
       loadProgress = Math.min(100, loadProgress + Math.ceil(Math.random() * 7));
       loading.style.setProperty("--load", loadProgress);
       loaderFill.style.width = loadProgress + "%";
-      loaderShip.style.left = loadProgress + "%";
+      loaderShip.style.left = (8 + loadProgress * .84) + "%";
       loadingText.textContent = "Fueling up the birthday rocket ... " + loadProgress + "%";
       if (loadProgress >= 100) {
         clearInterval(loadingTimer);

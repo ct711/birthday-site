@@ -3705,7 +3705,7 @@ main {
 
       .flame-zone {
         left: 86.6%;
-        top: 31.5%;
+        top: 32.6%;
         width: 54px;
         height: 70px;
       }
@@ -4017,7 +4017,7 @@ main {
   &amp;lt;/script&amp;gt;
 
 
-&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&quot; allow=&quot;microphone&quot;&gt;&lt;/iframe&gt;
+&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&amp;quot; allow=&amp;quot;microphone&quot;&gt;&lt;/iframe&gt;
   &lt;/section&gt;
   &lt;script&gt;
     const intro = document.getElementById(&quot;particleIntro&quot;);
@@ -4450,8 +4450,6 @@ main {
       if (easterKirbyImg.decode) easterKirbyImg.decode().catch(() =&gt; {});
     }
 
-    let lastYouTapAt = 0;
-
     function handleYouTap(event) {
       if (event?.__birthdayTapHandled) return;
       if (event) event.__birthdayTapHandled = true;
@@ -4459,9 +4457,6 @@ main {
         event.preventDefault();
         event.stopPropagation();
       }
-      const now = performance.now();
-      if (now - lastYouTapAt &lt; 650) return;
-      lastYouTapAt = now;
       if (easterUnlocked) {
         return;
       }
@@ -4493,24 +4488,7 @@ main {
     }
 
     youTrigger.addEventListener(&quot;pointerup&quot;, handleYouTap);
-    youTrigger.addEventListener(&quot;touchend&quot;, handleYouTap, { passive: false });
-    youTrigger.addEventListener(&quot;click&quot;, handleYouTap);
 
-    function isFinalTapTarget(event) {
-      const target = event.target;
-      if (!(target instanceof Element)) return false;
-      if (target.closest(&quot;.actions, #backBtn, #restartBtn, #candleSurprise, #easterKirby&quot;)) return false;
-      return !!target.closest(&quot;#youTrigger, .final-copy, .final-kirby&quot;);
-    }
-
-    function handleFinalAreaTap(event) {
-      if (!isFinalTapTarget(event)) return;
-      handleYouTap(event);
-    }
-
-    document.addEventListener(&quot;pointerup&quot;, handleFinalAreaTap, true);
-    document.addEventListener(&quot;touchend&quot;, handleFinalAreaTap, { capture: true, passive: false });
-    document.addEventListener(&quot;click&quot;, handleFinalAreaTap, true);
 
     easterKirby.addEventListener(&quot;click&quot;, () =&gt; {
       if (easterUnlocked) {

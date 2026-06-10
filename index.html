@@ -266,14 +266,17 @@
     }
 
     .loading-copy h1 {
-      width: min(820px, 92vw);
+      width: min(560px, calc(100vw - 40px));
       margin: 0 auto;
-      font-size: clamp(42px, 7.4vw, 86px);
-      line-height: .94;
+      font-size: clamp(32px, 6.2vw, 70px);
+      line-height: 1.06;
       letter-spacing: 0;
       color: #352838;
       text-wrap: balance;
       text-align: center;
+      white-space: normal;
+      overflow-wrap: normal;
+      word-break: normal;
     }
 
     .loading-copy p {
@@ -2141,6 +2144,11 @@ main {
 
     @media (max-width: 430px) {
       .loading-inner { width: min(100%, 340px); padding: 0 16px; }
+      .loading-copy h1 {
+        width: min(330px, calc(100vw - 44px));
+        font-size: clamp(30px, 8.2vw, 36px);
+        line-height: 1.12;
+      }
       .hero h2,
       .kirby-arrival h2,
       .gallery h2 { font-size: clamp(30px, 8.6vw, 40px); }

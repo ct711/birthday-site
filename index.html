@@ -2388,7 +2388,7 @@ main {
     </section>
 
     <section class="final-embed" id="finalInlineSection" aria-label="Final birthday surprise">
-      <iframe id="finalInlineFrame" title="Final birthday surprise" scrolling="no" srcdoc="&lt;!doctype html&gt;
+      <iframe id="finalInlineFrame" title="Final birthday surprise" scrolling="no" allow="microphone" srcdoc="&lt;!doctype html&gt;
 &lt;html lang=&quot;zh-Hans&quot;&gt;&lt;head&gt;
   &lt;meta charset=&quot;utf-8&quot;&gt;
   &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
@@ -3112,7 +3112,7 @@ main {
     &lt;/section&gt;
   &lt;/main&gt;
   &lt;section class=&quot;candle-surprise&quot; id=&quot;candleSurprise&quot; aria-label=&quot;Blow the birthday candle&quot;&gt;
-    &lt;iframe id=&quot;candleFrame&quot; title=&quot;Blow the birthday candle&quot; data-src=&quot;candle.html&quot; srcdoc=&quot;&amp;lt;!doctype html&amp;gt;
+    &lt;iframe id=&quot;candleFrame&quot; title=&quot;Blow the birthday candle&quot; data-src=&quot;candle.html&quot; allow=&quot;microphone&quot; srcdoc=&quot;&amp;lt;!doctype html&amp;gt;
 &amp;lt;html lang=&amp;quot;zh-CN&amp;quot;&amp;gt;&amp;lt;head&amp;gt;
   &amp;lt;meta charset=&amp;quot;utf-8&amp;quot;&amp;gt;
   &amp;lt;meta name=&amp;quot;viewport&amp;quot; content=&amp;quot;width=device-width, initial-scale=1&amp;quot;&amp;gt;
@@ -3607,9 +3607,9 @@ main {
     }
 
     .controls {
-      position: fixed;
+      position: absolute;
       left: 50%;
-      bottom: max(14px, env(safe-area-inset-bottom));
+      bottom: clamp(26px, 7%, 78px);
       z-index: 12;
       display: flex;
       justify-content: center;
@@ -3697,6 +3697,10 @@ main {
 
       .stage {
         aspect-ratio: 4 / 5;
+      }
+
+      .controls {
+        bottom: clamp(54px, 10%, 92px);
       }
 
       .flame-zone {
@@ -3944,12 +3948,12 @@ main {
       const lowBand = data.slice(2, 24);
       const average = lowBand.reduce((sum, value) =&amp;gt; sum + value, 0) / lowBand.length / 255;
       const rawVolume = average;
-      if (performance.now() &lt; calibratingUntil) {
+      if (performance.now() &amp;lt; calibratingUntil) {
         calibrationSamples.push(rawVolume);
-        const sampleTotal = calibrationSamples.reduce((total, value) =&gt; total + value, 0);
+        const sampleTotal = calibrationSamples.reduce((total, value) =&amp;gt; total + value, 0);
         ambientFloor = Math.max(0.08, Math.min(0.5, sampleTotal / calibrationSamples.length + 0.1));
         setMeter(0);
-        statusText.textContent = &quot;Calibrating&quot;;
+        statusText.textContent = &amp;quot;Calibrating&amp;quot;;
         animationFrame = requestAnimationFrame(readVolume);
         return;
       }
@@ -3957,7 +3961,7 @@ main {
       setMeter(volume);
 
       const micWarmedUp = performance.now() &amp;gt; micReadyAt;
-      if (micWarmedUp &amp;&amp; volume &amp;gt; 0.62 &amp;&amp; rawVolume &amp;gt; ambientFloor + 0.18) {
+      if (micWarmedUp &amp;amp;&amp;amp; volume &amp;gt; 0.62 &amp;amp;&amp;amp; rawVolume &amp;gt; ambientFloor + 0.18) {
         loudFrames += 1;
         blowScore += Math.max(0, volume - 0.45) * 0.35;
         candle.classList.add(&amp;quot;blowing&amp;quot;);
@@ -3969,7 +3973,7 @@ main {
         if (!micWarmedUp) statusText.textContent = &amp;quot;Listening&amp;quot;;
       }
 
-      if (loudFrames &amp;gt;= 20 &amp;&amp; blowScore &amp;gt; 2.4) {
+      if (loudFrames &amp;gt;= 20 &amp;amp;&amp;amp; blowScore &amp;gt; 2.4) {
         extinguish();
         return;
       }
@@ -4013,7 +4017,7 @@ main {
   &amp;lt;/script&amp;gt;
 
 
-&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&quot;&gt;&lt;/iframe&gt;
+&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&quot; allow=&quot;microphone&quot;&gt;&lt;/iframe&gt;
   &lt;/section&gt;
   &lt;script&gt;
     const intro = document.getElementById(&quot;particleIntro&quot;);
@@ -4449,12 +4453,14 @@ main {
     let lastYouTapAt = 0;
 
     function handleYouTap(event) {
+      if (event?.__birthdayTapHandled) return;
+      if (event) event.__birthdayTapHandled = true;
       if (event) {
         event.preventDefault();
         event.stopPropagation();
       }
       const now = performance.now();
-      if (now - lastYouTapAt &lt; 180) return;
+      if (now - lastYouTapAt &lt; 650) return;
       lastYouTapAt = now;
       if (easterUnlocked) {
         return;
@@ -4528,7 +4534,7 @@ main {
     });
   &lt;/script&gt;
 
-&lt;/body&gt;&lt;/html&gt;"></iframe>
+&lt;/body&gt;&lt;/html&gt;&quot; allow=&quot;microphone"></iframe>
     </section>
 
   </main>

@@ -3103,7 +3103,7 @@ main {
       &lt;div class=&quot;easter-status&quot; id=&quot;easterStatus&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;final-copy&quot; aria-hidden=&quot;true&quot;&gt;
         &lt;h1&gt;A cake for &lt;button class=&quot;you-trigger&quot; id=&quot;youTrigger&quot; aria-label=&quot;Tap you seven times&quot;&gt;YOU&lt;/button&gt;&lt;/h1&gt;
-        &lt;p&gt;Happy Birthday, Aditi! 🎂&lt;br&gt;&lt;br&gt;Wishing you a day filled with joy, laughter, and surprises as sweet as you are! &amp;lt;3&lt;br&gt;&lt;br&gt;You deserve the absolute best — here's to another amazing year ahead!&lt;br&gt;&lt;br&gt;With love&lt;br&gt;Ct 💕&lt;br&gt;&lt;/p&gt;
+        &lt;p&gt;Happy Birthday, Aditi! 🎂&lt;br&gt;&lt;br&gt;Wishing you a day filled with joy, laughter, and surprises as sweet as you are! &amp;lt;3&lt;br&gt;&lt;br&gt;You deserve the absolute best — here&#x27;s to another amazing year ahead!&lt;br&gt;&lt;br&gt;With love&lt;br&gt;Ct 💕&lt;br&gt;&lt;/p&gt;
       &lt;/div&gt;
       &lt;div class=&quot;actions&quot;&gt;
         &lt;button class=&quot;btn primary&quot; id=&quot;backBtn&quot;&gt;Back to Gallery&lt;/button&gt;
@@ -3944,12 +3944,12 @@ main {
       const lowBand = data.slice(2, 24);
       const average = lowBand.reduce((sum, value) =&amp;gt; sum + value, 0) / lowBand.length / 255;
       const rawVolume = average;
-      if (performance.now() < calibratingUntil) {
+      if (performance.now() &lt; calibratingUntil) {
         calibrationSamples.push(rawVolume);
-        const sampleTotal = calibrationSamples.reduce((total, value) => total + value, 0);
+        const sampleTotal = calibrationSamples.reduce((total, value) =&gt; total + value, 0);
         ambientFloor = Math.max(0.08, Math.min(0.5, sampleTotal / calibrationSamples.length + 0.1));
         setMeter(0);
-        statusText.textContent = "Calibrating";
+        statusText.textContent = &quot;Calibrating&quot;;
         animationFrame = requestAnimationFrame(readVolume);
         return;
       }
@@ -4489,6 +4489,22 @@ main {
     youTrigger.addEventListener(&quot;pointerup&quot;, handleYouTap);
     youTrigger.addEventListener(&quot;touchend&quot;, handleYouTap, { passive: false });
     youTrigger.addEventListener(&quot;click&quot;, handleYouTap);
+
+    function isFinalTapTarget(event) {
+      const target = event.target;
+      if (!(target instanceof Element)) return false;
+      if (target.closest(&quot;.actions, #backBtn, #restartBtn, #candleSurprise, #easterKirby&quot;)) return false;
+      return !!target.closest(&quot;#youTrigger, .final-copy, .final-kirby&quot;);
+    }
+
+    function handleFinalAreaTap(event) {
+      if (!isFinalTapTarget(event)) return;
+      handleYouTap(event);
+    }
+
+    document.addEventListener(&quot;pointerup&quot;, handleFinalAreaTap, true);
+    document.addEventListener(&quot;touchend&quot;, handleFinalAreaTap, { capture: true, passive: false });
+    document.addEventListener(&quot;click&quot;, handleFinalAreaTap, true);
 
     easterKirby.addEventListener(&quot;click&quot;, () =&gt; {
       if (easterUnlocked) {

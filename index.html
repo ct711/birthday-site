@@ -4852,7 +4852,9 @@ main {
       openLetterBtn.textContent = "Letter Opened";
     });
     function injectFinalInline() {
-      if (!finalInlineFrame.src) {
+      if (finalInlineFrame.getAttribute("srcdoc")) {
+        finalInlineFrame.removeAttribute("src");
+      } else if (!finalInlineFrame.src) {
         finalInlineFrame.src = finalInlineFrame.dataset.src || "final.html";
       }
     }

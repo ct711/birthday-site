@@ -112,7 +112,7 @@
       width: min(330px, 68vw);
       height: min(300px, 58vw);
       display: grid;
-      place-items: end center;
+      place-items: center;
       margin-bottom: 4px;
       filter: drop-shadow(0 28px 34px rgba(116, 76, 96, .15));
     }
@@ -1755,21 +1755,30 @@ main {
     }
 
     .final-embed {
-      min-height: 100vh;
+      min-height: 0;
+      height: 0;
       background: #08060b;
-      display: none;
+      display: block;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
     }
 
     .final-embed.is-active {
-      display: block;
+      min-height: 100dvh;
+      height: auto;
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .final-embed iframe {
       display: block;
       width: 100%;
-      height: 100vh;
+      height: max(100vh, min(132vh, 1180px));
       border: 0;
       background: #08060b;
+      overflow: hidden;
+      scrollbar-width: none;
     }
 
     .final {
@@ -2418,8 +2427,8 @@ main {
       position: relative;
       min-height: 100vh;
       display: grid;
-      place-items: end center;
-      padding: clamp(36px, 6vw, 80px);
+      place-items: center;
+      padding: clamp(22px, 4vw, 56px);
       overflow: hidden;
       background: transparent;
       color: #fff8f2;
@@ -2531,10 +2540,10 @@ main {
       justify-items: center;
       gap: 12px;
       text-align: center;
-      opacity: 0;
-      transform: translate3d(0, 18px, 0) scale(.985);
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
       transition: opacity 620ms ease, transform 620ms cubic-bezier(.2,.9,.2,1);
-      margin-bottom: clamp(10px, 3vh, 34px);
+      margin-bottom: 0;
       pointer-events: auto;
       backface-visibility: hidden;
       contain: layout paint;
@@ -2556,8 +2565,8 @@ main {
       max-height: min(360px, 42vh);
       object-fit: contain;
       filter: drop-shadow(0 30px 34px rgba(0, 0, 0, .38)) drop-shadow(0 0 28px rgba(255, 126, 168, .2));
-      opacity: 0;
-      transform: translateY(34px) scale(.88);
+      opacity: 1;
+      transform: translateY(0) scale(1);
     }
 
 
@@ -4829,7 +4838,11 @@ main {
       }
     }, 130);
 
-    startBtn.addEventListener("click", () => {
+    let hasStartedExperience = false;
+    function startExperience(event) {
+      event?.preventDefault?.();
+      if (hasStartedExperience) return;
+      hasStartedExperience = true;
       playTone("gift");
       setMusic(true);
       giftBox.classList.add("is-launching");
@@ -4838,7 +4851,10 @@ main {
       loading.classList.add("is-hidden");
       document.body.classList.remove("locked");
       setTimeout(() => document.getElementById("top").scrollIntoView({ behavior: "smooth" }), 60);
-    });
+    }
+
+    startBtn.addEventListener("click", startExperience);
+    startBtn.addEventListener("pointerup", startExperience);
 
     replayBtn?.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
     particleHint.addEventListener("click", () => {
@@ -4874,9 +4890,20 @@ main {
       finalInlineSection.classList.add("is-active");
     }
 
+    function scrollFinalInline(behavior = "auto") {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          finalInlineSection.scrollIntoView({ behavior, block: "start" });
+        });
+      });
+      setTimeout(() => {
+        finalInlineSection.scrollIntoView({ behavior: "auto", block: "start" });
+      }, 450);
+    }
+
     function revealFinalInline(behavior = "smooth") {
       loadFinalInline();
-      finalInlineSection.scrollIntoView({ behavior });
+      scrollFinalInline(behavior);
     }
 
     function playMagicStew() {
@@ -4896,8 +4923,14 @@ main {
       }, 4450);
       setTimeout(() => {
         loadFinalInline();
-        finalInlineSection.scrollIntoView({ behavior: "auto" });
+        scrollFinalInline("auto");
       }, 5050);
+      setTimeout(() => {
+        if (!finalInlineSection.classList.contains("is-active")) {
+          loadFinalInline();
+          scrollFinalInline("auto");
+        }
+      }, 7200);
       setTimeout(() => {
         magicStew.classList.add("is-complete");
       }, 6500);
@@ -5436,19 +5469,33 @@ main {
         }, { threshold: [.18, .35] });
         galleryObserver.observe(gallerySection);
       }
+      const maybeStartStew = () => {
+        if (stewStarted || !magicStew) return;
+        const rect = magicStew.getBoundingClientRect();
+        const userHasScrolled = window.scrollY > window.innerHeight * .9;
+        const isActuallyInView = rect.top < window.innerHeight * .78 && rect.bottom > window.innerHeight * .18;
+        if (userHasScrolled && (gallerySeen || rect.top < window.innerHeight * .62) && isActuallyInView) {
+          playMagicStew();
+          stewObserver?.disconnect();
+        }
+      };
+      let stewTicking = false;
+      const queueStewCheck = () => {
+        if (stewTicking || stewStarted) return;
+        stewTicking = true;
+        requestAnimationFrame(() => {
+          stewTicking = false;
+          maybeStartStew();
+        });
+      };
       const stewObserver = new IntersectionObserver((entries) => {
         for (const entry of entries) {
-          const rect = magicStew.getBoundingClientRect();
-          const userHasScrolled = window.scrollY > window.innerHeight * 1.6;
-          const isActuallyInView = rect.top < window.innerHeight * .52 && rect.bottom > window.innerHeight * .55;
-          if (entry.isIntersecting && entry.intersectionRatio > .28 && gallerySeen && userHasScrolled && isActuallyInView) {
-            playMagicStew();
-            stewObserver.disconnect();
-            break;
-          }
+          if (entry.isIntersecting && entry.intersectionRatio > .12) queueStewCheck();
         }
-      }, { threshold: [.28, .45, .62] });
+      }, { threshold: [.12, .28, .45] });
       stewObserver.observe(magicStew);
+      window.addEventListener("scroll", queueStewCheck, { passive: true });
+      window.addEventListener("resize", queueStewCheck);
     }
 
     window.addEventListener("resize", resizeCanvas);

@@ -3700,7 +3700,7 @@ main {
       }
 
       .controls {
-        bottom: clamp(54px, 10%, 92px);
+        bottom: clamp(92px, 18%, 148px);
       }
 
       .flame-zone {
@@ -3945,25 +3945,34 @@ main {
     function readVolume() {
       if (!analyser || isOut) return;
       analyser.getByteFrequencyData(data);
+      analyser.getByteTimeDomainData(timeData);
       const lowBand = data.slice(2, 24);
-      const average = lowBand.reduce((sum, value) =&amp;gt; sum + value, 0) / lowBand.length / 255;
-      const rawVolume = average;
+      const frequencyAverage = lowBand.reduce((sum, value) =&amp;gt; sum + value, 0) / lowBand.length / 255;
+      let squareTotal = 0;
+      let peak = 0;
+      for (let i = 0; i &amp;lt; timeData.length; i++) {
+        const centered = (timeData[i] - 128) / 128;
+        squareTotal += centered * centered;
+        peak = Math.max(peak, Math.abs(centered));
+      }
+      const rms = Math.sqrt(squareTotal / timeData.length);
+      const rawVolume = Math.max(frequencyAverage, rms * 3.4, peak * 0.72);
       if (performance.now() &amp;lt; calibratingUntil) {
         calibrationSamples.push(rawVolume);
         const sampleTotal = calibrationSamples.reduce((total, value) =&amp;gt; total + value, 0);
-        ambientFloor = Math.max(0.08, Math.min(0.5, sampleTotal / calibrationSamples.length + 0.1));
+        ambientFloor = Math.max(0.05, Math.min(0.42, sampleTotal / calibrationSamples.length + 0.06));
         setMeter(0);
         statusText.textContent = &amp;quot;Calibrating&amp;quot;;
         animationFrame = requestAnimationFrame(readVolume);
         return;
       }
-      const volume = Math.max(0, Math.min(1, Math.max(0, rawVolume - ambientFloor) * 3));
+      const volume = Math.max(0, Math.min(1, Math.max(0, rawVolume - ambientFloor) * 4.2));
       setMeter(volume);
 
       const micWarmedUp = performance.now() &amp;gt; micReadyAt;
-      if (micWarmedUp &amp;amp;&amp;amp; volume &amp;gt; 0.62 &amp;amp;&amp;amp; rawVolume &amp;gt; ambientFloor + 0.18) {
+      if (micWarmedUp &amp;amp;&amp;amp; volume &amp;gt; 0.18 &amp;amp;&amp;amp; (rawVolume &amp;gt; ambientFloor + 0.035 || rms &amp;gt; 0.026 || peak &amp;gt; 0.11)) {
         loudFrames += 1;
-        blowScore += Math.max(0, volume - 0.45) * 0.35;
+        blowScore += Math.max(0, volume - 0.10) * 0.68;
         candle.classList.add(&amp;quot;blowing&amp;quot;);
         statusText.textContent = &amp;quot;Blowing&amp;quot;;
       } else {
@@ -3973,7 +3982,7 @@ main {
         if (!micWarmedUp) statusText.textContent = &amp;quot;Listening&amp;quot;;
       }
 
-      if (loudFrames &amp;gt;= 20 &amp;amp;&amp;amp; blowScore &amp;gt; 2.4) {
+      if (loudFrames &amp;gt;= 5 &amp;amp;&amp;amp; blowScore &amp;gt; 0.36) {
         extinguish();
         return;
       }
@@ -3988,16 +3997,17 @@ main {
         const source = audioContext.createMediaStreamSource(stream);
         analyser = audioContext.createAnalyser();
         analyser.fftSize = 512;
-        analyser.smoothingTimeConstant = 0.72;
+        analyser.smoothingTimeConstant = 0.45;
         data = new Uint8Array(analyser.frequencyBinCount);
+        timeData = new Uint8Array(analyser.fftSize);
         source.connect(analyser);
         micButton.textContent = &amp;quot;Mic on&amp;quot;;
         micButton.disabled = true;
         statusText.textContent = &amp;quot;Calibrating&amp;quot;;
         calibrationSamples = [];
         ambientFloor = 0;
-        calibratingUntil = performance.now() + 1800;
-        micReadyAt = performance.now() + 2600;
+        calibratingUntil = performance.now() + 1200;
+        micReadyAt = performance.now() + 1700;
         loudFrames = 0;
         blowScore = 0;
         cancelAnimationFrame(animationFrame);

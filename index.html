@@ -449,6 +449,29 @@
       transform: translateY(0) scale(1);
     }
 
+    .soundcloud-panel.is-collapsed {
+      width: auto;
+      min-width: 176px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    .soundcloud-panel.is-collapsed .soundcloud-head {
+      margin: 0;
+    }
+
+    .soundcloud-panel.is-collapsed .soundcloud-head span::after {
+      content: " playing";
+      opacity: .72;
+      font-weight: 800;
+    }
+
+    .soundcloud-panel.is-collapsed .soundcloud-close,
+    .soundcloud-panel.is-collapsed #soundcloudMount {
+      display: none;
+    }
+
     .soundcloud-head {
       display: flex;
       align-items: center;
@@ -2198,6 +2221,30 @@ main {
       .soundcloud-panel iframe {
         height: 86px;
         border-radius: 12px;
+      }
+
+      .soundcloud-panel.is-collapsed {
+        left: auto;
+        right: max(12px, env(safe-area-inset-right));
+        bottom: max(12px, env(safe-area-inset-bottom));
+        min-width: 0;
+        padding: 10px 13px;
+        border-radius: 999px;
+      }
+
+      .soundcloud-panel.is-collapsed .soundcloud-head span {
+        max-width: 118px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .soundcloud-panel.is-collapsed .soundcloud-head span::before {
+        content: "\266A ";
+      }
+
+      .soundcloud-panel.is-collapsed .soundcloud-head span::after {
+        content: "";
       }
 
       .kirby-arrival {
@@ -4152,19 +4199,19 @@ main {
       if (performance.now() &amp;lt; calibratingUntil) {
         calibrationSamples.push(rawVolume);
         const sampleTotal = calibrationSamples.reduce((total, value) =&amp;gt; total + value, 0);
-        ambientFloor = Math.max(0.05, Math.min(0.42, sampleTotal / calibrationSamples.length + 0.06));
+        ambientFloor = Math.max(0.04, Math.min(0.38, sampleTotal / calibrationSamples.length + 0.045));
         setMeter(0);
         statusText.textContent = &amp;quot;Calibrating&amp;quot;;
         animationFrame = requestAnimationFrame(readVolume);
         return;
       }
-      const volume = Math.max(0, Math.min(1, Math.max(0, rawVolume - ambientFloor) * 4.2));
+      const volume = Math.max(0, Math.min(1, Math.max(0, rawVolume - ambientFloor) * 5.8));
       setMeter(volume);
 
       const micWarmedUp = performance.now() &amp;gt; micReadyAt;
-      if (micWarmedUp &amp;amp;&amp;amp; volume &amp;gt; 0.18 &amp;amp;&amp;amp; (rawVolume &amp;gt; ambientFloor + 0.035 || rms &amp;gt; 0.026 || peak &amp;gt; 0.11)) {
+      if (micWarmedUp &amp;amp;&amp;amp; volume &amp;gt; 0.13 &amp;amp;&amp;amp; (rawVolume &amp;gt; ambientFloor + 0.026 || rms &amp;gt; 0.020 || peak &amp;gt; 0.085)) {
         loudFrames += 1;
-        blowScore += Math.max(0, volume - 0.10) * 0.68;
+        blowScore += Math.max(0, volume - 0.075) * 0.82;
         candle.classList.add(&amp;quot;blowing&amp;quot;);
         statusText.textContent = &amp;quot;Blowing&amp;quot;;
       } else {
@@ -4174,7 +4221,7 @@ main {
         if (!micWarmedUp) statusText.textContent = &amp;quot;Listening&amp;quot;;
       }
 
-      if (loudFrames &amp;gt;= 5 &amp;amp;&amp;amp; blowScore &amp;gt; 0.36) {
+      if (loudFrames &amp;gt;= 4 &amp;amp;&amp;amp; blowScore &amp;gt; 0.30) {
         extinguish();
         return;
       }
@@ -4198,8 +4245,8 @@ main {
         statusText.textContent = &amp;quot;Calibrating&amp;quot;;
         calibrationSamples = [];
         ambientFloor = 0;
-        calibratingUntil = performance.now() + 1200;
-        micReadyAt = performance.now() + 1700;
+        calibratingUntil = performance.now() + 1500;
+        micReadyAt = performance.now() + 2300;
         loudFrames = 0;
         blowScore = 0;
         cancelAnimationFrame(animationFrame);
@@ -5063,13 +5110,27 @@ main {
         recordGate?.classList.add("is-ready");
       }
     }, 130);
-    function openSoundCloudPlayer(open = true) {
+    let soundcloudCollapseTimer = 0;
+    function setSoundCloudCollapsed(collapsed) {
+      soundcloudPanel?.classList.toggle("is-collapsed", collapsed);
+    }
+
+    function openSoundCloudPlayer(open = true, autoCollapse = true) {
+      clearTimeout(soundcloudCollapseTimer);
       if (open && soundcloudMount && !soundcloudMount.dataset.loaded) {
         soundcloudMount.innerHTML = '<iframe scrolling="no" frameborder="no" allow="autoplay; encrypted-media" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A1347115642&color=%23ff7ea8&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"></iframe>';
         soundcloudMount.dataset.loaded = "true";
       }
       soundcloudPanel?.classList.toggle("is-open", open);
       soundcloudPanel?.setAttribute("aria-hidden", open ? "false" : "true");
+      if (!open) {
+        setSoundCloudCollapsed(false);
+        return;
+      }
+      setSoundCloudCollapsed(false);
+      if (autoCollapse) {
+        soundcloudCollapseTimer = setTimeout(() => setSoundCloudCollapsed(true), 2200);
+      }
     }
 
     let hasPickedRecord = false;
@@ -5106,7 +5167,13 @@ main {
     recordDisc?.addEventListener("pointerup", pickRecord);
     startBtn.addEventListener("click", startExperience);
     startBtn.addEventListener("pointerup", startExperience);
-    soundcloudClose?.addEventListener("click", () => openSoundCloudPlayer(false));
+    soundcloudClose?.addEventListener("click", (event) => {
+      event.stopPropagation();
+      openSoundCloudPlayer(false);
+    });
+    soundcloudPanel?.addEventListener("click", () => {
+      if (soundcloudPanel.classList.contains("is-collapsed")) openSoundCloudPlayer(true, false);
+    });
 
     replayBtn?.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
     particleHint.addEventListener("click", () => {

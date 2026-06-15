@@ -2162,6 +2162,44 @@ main {
       .letter-scene.is-open .letter-paper { transform: translateY(-74px) scale(.98); }
       .letter-paper strong { font-size: clamp(21px, 6.4vw, 28px); }
       .letter-paper span { font-size: 12.5px; line-height: 1.32; }
+      .record-gate {
+        gap: 10px;
+        margin-bottom: 108px;
+      }
+
+      .record-disc {
+        width: 70px;
+      }
+
+      .record-caption {
+        max-width: 310px;
+        font-size: 14px;
+      }
+
+      .soundcloud-panel {
+        left: max(12px, env(safe-area-inset-left));
+        right: max(12px, env(safe-area-inset-right));
+        bottom: max(10px, env(safe-area-inset-bottom));
+        width: auto;
+        padding: 8px;
+        border-radius: 18px;
+      }
+
+      .soundcloud-head {
+        margin-bottom: 6px;
+        font-size: 12px;
+      }
+
+      .soundcloud-close {
+        width: 24px;
+        height: 24px;
+      }
+
+      .soundcloud-panel iframe {
+        height: 86px;
+        border-radius: 12px;
+      }
+
       .kirby-arrival {
         grid-template-columns: 1fr;
         gap: clamp(18px, 5vw, 30px);

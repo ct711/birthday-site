@@ -5111,25 +5111,77 @@ main {
       }
     }, 130);
     let soundcloudCollapseTimer = 0;
+    let soundcloudApiPromise = null;
+    let soundcloudWidget = null;
+    let soundcloudShouldPlay = false;
+
     function setSoundCloudCollapsed(collapsed) {
       soundcloudPanel?.classList.toggle("is-collapsed", collapsed);
     }
 
-    function openSoundCloudPlayer(open = true, autoCollapse = true) {
-      clearTimeout(soundcloudCollapseTimer);
-      if (open && soundcloudMount && !soundcloudMount.dataset.loaded) {
-        soundcloudMount.innerHTML = '<iframe scrolling="no" frameborder="no" allow="autoplay; encrypted-media" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A1347115642&color=%23ff7ea8&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"></iframe>';
+    function loadSoundCloudApi() {
+      if (window.SC?.Widget) return Promise.resolve(window.SC);
+      if (soundcloudApiPromise) return soundcloudApiPromise;
+      soundcloudApiPromise = new Promise((resolve, reject) => {
+        const existing = document.querySelector("script[data-soundcloud-api]");
+        if (existing) {
+          existing.addEventListener("load", () => resolve(window.SC), { once: true });
+          existing.addEventListener("error", reject, { once: true });
+          return;
+        }
+        const script = document.createElement("script");
+        script.src = "https://w.soundcloud.com/player/api.js";
+        script.async = true;
+        script.dataset.soundcloudApi = "true";
+        script.onload = () => resolve(window.SC);
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+      return soundcloudApiPromise;
+    }
+
+    function ensureSoundCloudFrame() {
+      if (!soundcloudMount) return null;
+      if (!soundcloudMount.dataset.loaded) {
+        soundcloudMount.innerHTML = '<iframe scrolling="no" frameborder="no" allow="autoplay; encrypted-media" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A1347115642&color=%23ff7ea8&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false"></iframe>';
         soundcloudMount.dataset.loaded = "true";
       }
+      return soundcloudMount.querySelector("iframe");
+    }
+
+    function tryPlaySoundCloud() {
+      soundcloudShouldPlay = true;
+      const frame = ensureSoundCloudFrame();
+      if (!frame) return;
+      loadSoundCloudApi().then((SC) => {
+        if (!SC?.Widget || !soundcloudShouldPlay) return;
+        soundcloudWidget = soundcloudWidget || SC.Widget(frame);
+        const play = () => {
+          try {
+            soundcloudWidget.setVolume?.(75);
+            soundcloudWidget.play?.();
+          } catch {}
+        };
+        try {
+          soundcloudWidget.bind?.(SC.Widget.Events.READY, play);
+        } catch {}
+        play();
+      }).catch(() => {});
+    }
+
+    function openSoundCloudPlayer(open = true, autoCollapse = true) {
+      clearTimeout(soundcloudCollapseTimer);
+      if (open) ensureSoundCloudFrame();
       soundcloudPanel?.classList.toggle("is-open", open);
       soundcloudPanel?.setAttribute("aria-hidden", open ? "false" : "true");
       if (!open) {
+        soundcloudShouldPlay = false;
         setSoundCloudCollapsed(false);
         return;
       }
       setSoundCloudCollapsed(false);
       if (autoCollapse) {
-        soundcloudCollapseTimer = setTimeout(() => setSoundCloudCollapsed(true), 2200);
+        soundcloudCollapseTimer = setTimeout(() => setSoundCloudCollapsed(true), 5000);
       }
     }
 
@@ -5140,8 +5192,9 @@ main {
       hasPickedRecord = true;
       playTone("gift");
       recordGate?.classList.add("is-playing");
-      openSoundCloudPlayer(true);
-      if (recordCaption) recordCaption.textContent = "SoundCloud is open. Press Start.";
+      openSoundCloudPlayer(true, false);
+      tryPlaySoundCloud();
+      if (recordCaption) recordCaption.textContent = "Song is ready. Press Start.";
       setTimeout(() => startBtn?.classList.add("is-ready"), 360);
     }
 
@@ -5154,6 +5207,8 @@ main {
         return;
       }
       hasStartedExperience = true;
+      openSoundCloudPlayer(true, true);
+      tryPlaySoundCloud();
       playTone("gift");
       giftBox.classList.add("is-launching");
       loaderShip.classList.add("is-launching");

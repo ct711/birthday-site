@@ -3068,6 +3068,30 @@ main {
       text-shadow: 0 14px 42px rgba(0,0,0,.42);
     }
 
+    .final-copy p {
+      width: min(760px, 92vw);
+      margin: 0 auto;
+      display: grid;
+      gap: clamp(10px, 1.7vw, 15px);
+      color: rgba(255, 248, 242, .78);
+      font-size: clamp(15px, 1.55vw, 19px);
+      line-height: 1.56;
+      font-weight: 650;
+      text-wrap: pretty;
+    }
+
+    .final-copy .wish-line {
+      display: block;
+      max-width: 68ch;
+      margin: 0 auto;
+    }
+
+    .final-copy .wish-love {
+      margin-top: 2px;
+      color: rgba(255, 248, 242, .9);
+      font-weight: 780;
+    }
+
     @media (max-width: 720px) {
       .final-shell,
       .easter-kirby {
@@ -3296,8 +3320,32 @@ main {
         animation-duration: calc(var(--d) * 1.8);
       }
 
+      .final-copy {
+        gap: 10px;
+        padding-inline: 6px;
+      }
+
+      .final-copy p {
+        width: min(338px, 92vw);
+        gap: 9px;
+        font-size: clamp(12.8px, 3.45vw, 14.5px);
+        line-height: 1.48;
+        font-weight: 650;
+      }
+
+      .final-copy .wish-line {
+        max-width: 34ch;
+      }
+
+      .final-copy .wish-love {
+        margin-top: 3px;
+      }
+
       .you-hint {
-        font-size: 11px;
+        max-width: 280px;
+        margin-top: 2px;
+        font-size: 10.5px;
+        line-height: 1.35;
         letter-spacing: .06em;
       }
     }
@@ -3317,6 +3365,10 @@ main {
           background: linear-gradient(135deg, #ff7ea8, #d9a84d) !important;
         }
         body { background: #08060b !important; } .particle-intro { background: #08060b !important; }
+        .final-copy h1 { color: #fff8f2 !important; }
+        .final-copy p, .final-copy .wish-line { color: rgba(255,248,242,.78) !important; }
+        .final-copy .wish-love { color: rgba(255,248,242,.92) !important; }
+        .you-hint { color: rgba(255,248,242,.58) !important; }
       &lt;/style&gt;&lt;/head&gt;
 &lt;body&gt;
   &lt;div class=&quot;particle-intro&quot; id=&quot;particleIntro&quot;&gt;
@@ -3341,7 +3393,7 @@ main {
       &lt;div class=&quot;easter-status&quot; id=&quot;easterStatus&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
       &lt;div class=&quot;final-copy&quot; aria-hidden=&quot;true&quot;&gt;
         &lt;h1&gt;A cake for &lt;button class=&quot;you-trigger&quot; id=&quot;youTrigger&quot; aria-label=&quot;Tap you seven times&quot;&gt;YOU&lt;/button&gt;&lt;/h1&gt;
-        &lt;p&gt;Happy Birthday, Aditi! 🎂&lt;br&gt;&lt;br&gt;Wishing you a day filled with joy, laughter, and surprises as sweet as you are! &amp;lt;3&lt;br&gt;&lt;br&gt;You deserve the absolute best — here&amp;#x27;s to another amazing year ahead!&lt;br&gt;&lt;br&gt;With love&lt;br&gt;Ct 💕&lt;br&gt;&lt;/p&gt;
+        &lt;p&gt;&lt;span class=&quot;wish-line&quot;&gt;Wishing you a day filled with joy, laughter, and surprises as sweet as you are! ❤️&lt;/span&gt;&lt;span class=&quot;wish-line&quot;&gt;I hope you stay happy, healthy, and surrounded by all the love and happiness you deserve.&lt;/span&gt;&lt;span class=&quot;wish-line&quot;&gt;You deserve the absolute best — here&amp;#x27;s to another amazing year ahead, filled with beautiful memories, little victories, and moments that make you smile.&lt;/span&gt;&lt;span class=&quot;wish-line&quot;&gt;And maybe one tiny selfish wish too: I hope life gives you lots of reasons to smile, and that there&#x27;s always ice cream around whenever you need a little extra happiness. I just really like seeing you happy. 🍦❤️&lt;/span&gt;&lt;span class=&quot;wish-line wish-love&quot;&gt;With love&lt;br&gt;Ct 💕&lt;/span&gt;&lt;/p&gt;
         &lt;div class=&quot;you-hint&quot;&gt;Psst... try clicking “YOU” seven times.&lt;/div&gt;
       &lt;/div&gt;
       &lt;div class=&quot;actions&quot;&gt;
@@ -4625,7 +4677,6 @@ main {
     function createSuctionClones(mouth) {
       [
         [document.querySelector(&quot;.final-kirby&quot;), 0, &quot;kirby&quot;],
-        [document.querySelector(&quot;.final-copy .eyebrow&quot;), 0, &quot;text&quot;],
         [document.querySelector(&quot;.final-copy h1&quot;), 90, &quot;title&quot;],
         [document.querySelector(&quot;.final-copy p&quot;), 180, &quot;text&quot;],
         [document.querySelector(&quot;.actions&quot;), 290, &quot;buttons&quot;],
@@ -4643,7 +4694,6 @@ main {
       [
         document.querySelector(&quot;.final-kirby&quot;),
         document.querySelector(&quot;.final-copy&quot;),
-        document.querySelector(&quot;.final-copy .eyebrow&quot;),
         document.querySelector(&quot;.final-copy h1&quot;),
         document.querySelector(&quot;.final-copy p&quot;),
         document.querySelector(&quot;.actions&quot;),
@@ -4951,13 +5001,13 @@ main {
         if (on) {
           await bgm.play();
           musicOn = true;
-          soundToggle.classList.add("is-on");
-          soundToggle.textContent = "♫";
+          soundToggle?.classList.add("is-on");
+          if (soundToggle) soundToggle.textContent = "♫";
         } else {
           bgm.pause();
           musicOn = false;
-          soundToggle.classList.remove("is-on");
-          soundToggle.textContent = "♪";
+          soundToggle?.classList.remove("is-on");
+          if (soundToggle) soundToggle.textContent = "♪";
         }
       } catch {
         musicOn = false;
